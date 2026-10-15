@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:;">
+  <title>Inkdrop</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body data-theme="dark">
+
+  <div id="app-container">
+
+    <!-- ===== LOGIN VIEW ===== -->
+    <div id="login-view" class="login-view hidden">
+      <div class="login-bg"></div>
+      <div class="login-card">
+        <div class="login-logo">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <rect width="48" height="48" rx="12" fill="#4C6EF5"/>
+            <path d="M14 34V14h4v20h-4zm8-12h8a4 4 0 010 8h-8v-8zm0-8h6a4 4 0 010 8h-6v-8z" fill="#fff"/>
+          </svg>
+          <h1>Inkdrop</h1>
+        </div>
+        <p class="login-subtitle">Organizing your Markdown notes made simple</p>
+
+        <form id="login-form" autocomplete="off">
+          <div class="login-field">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" placeholder="you@example.com" required autofocus>
+          </div>
+          <div class="login-field">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" placeholder="Password" required>
+          </div>
+          <div class="login-options">
+            <label class="login-remember">
+              <input type="checkbox" id="login-remember" checked> Remember me
+            </label>
+            <a href="#" id="forgot-password-link" class="login-link">Forgot password?</a>
+          </div>
+          <button type="submit" class="login-btn" id="login-btn">Log In</button>
+          <div class="login-error hidden" id="login-error"></div>
+        </form>
+
+        <div class="login-footer">
+          <span>Don't have an account?</span>
+          <a href="#" id="signup-link" class="login-link">Create Account</a>
+        </div>
+        <div class="login-footer">
+          <a href="#" id="skip-login-link" class="login-link login-link-dim">Continue offline</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MAIN APPLICATION LAYOUT ===== -->
+    <div id="main-app" class="main-layout">
+
+      <!-- ── HEADER BAR (title bar / traffic lights) ── -->
+      <div class="header-bar" id="header-bar">
+        <div class="header-bar-left">
+          <div class="app-header-mac-inset"></div>
+          <button class="app-menu-button app-header-button" id="app-menu-btn" title="Menu">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect y="2" width="16" height="1.5" rx=".75"/><rect y="7.25" width="16" height="1.5" rx=".75"/><rect y="12.5" width="16" height="1.5" rx=".75"/></svg>
+          </button>
+          <div class="app-header-separator"></div>
+          <div class="app-control-title" id="app-title">Inkdrop</div>
+        </div>
+
+        <div class="header-bar-center">
+          <div class="header-bar-navigation">
+            <button class="app-header-button" id="nav-back" title="Back" disabled>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="app-header-button" id="nav-forward" title="Forward" disabled>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="header-bar-right">
+          <button class="app-header-button" id="btn-new-note" title="New Note (Cmd+N)">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+          <button class="app-header-button" id="btn-toggle-sidebar" title="Toggle Sidebar (Cmd+\\)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.2" fill="none"/><line x1="5.5" y1="2" x2="5.5" y2="14" stroke="currentColor" stroke-width="1.2"/></svg>
+          </button>
+          <button class="app-header-button" id="btn-toggle-notelist" title="Toggle Note List">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.2" fill="none"/><line x1="7" y1="2" x2="7" y2="14" stroke="currentColor" stroke-width="1.2"/></svg>
+          </button>
+          <div class="app-header-separator"></div>
+          <div class="window-control-buttons" id="window-controls">
+            <button class="window-btn window-btn-minimize" id="btn-minimize" title="Minimize">
+              <svg width="10" height="10" viewBox="0 0 10 10"><line x1="1" y1="5" x2="9" y2="5" stroke="currentColor" stroke-width="1.2"/></svg>
+            </button>
+            <button class="window-btn window-btn-maximize" id="btn-maximize" title="Maximize">
+              <svg width="10" height="10" viewBox="0 0 10 10"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+            </button>
+            <button class="window-btn window-btn-close" id="btn-close" title="Close">
+              <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MAIN CONTENT (three-pane) ── -->
+      <div class="main-content" id="main-content">
+
+        <!-- ════ SIDEBAR ════ -->
+        <div class="sidebar" id="sidebar">
+          <div class="sidebar-layout">
+            <div class="sidebar-layout-content">
+
+              <!-- Workspace title -->
+              <div class="sidebar-workspace-menu" id="workspace-menu">
+                <div class="sidebar-workspace-title">
+                  <span class="sidebar-workspace-title-name" id="workspace-name">My Notes</span>
+                  <svg class="sidebar-workspace-chevron" width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M3 2l4 3-4 3" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+              </div>
+
+              <!-- Sidebar navigation -->
+              <div class="sidebar-navigation" id="sidebar-navigation">
+                <div class="sidebar-navigation-container">
+
+                  <!-- Primary nav -->
+                  <div class="sidebar-menu" id="sidebar-primary-menu">
+                    <div class="sidebar-menu-item active" data-view="all-notes" tabindex="0">
+                      <div class="sidebar-menu-item-content">
+                        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1zm1 3h8M4 8h8M4 11h5" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round"/></svg>
+                        <span>All Notes</span>
+                      </div>
+                      <span class="sidebar-menu-item-count" id="all-notes-count">0</span>
+                    </div>
+
+                    <div class="sidebar-menu-item" data-view="favorites" tabindex="0">
+                      <div class="sidebar-menu-item-content">
+                        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2l1.8 3.6L14 6.2l-3 2.9.7 4.1L8 11.1l-3.7 2.1.7-4.1-3-2.9 4.2-.6z" stroke="currentColor" stroke-width="1" fill="none" stroke-linejoin="round"/></svg>
+                        <span>Favorites</span>
+                      </div>
+                      <span class="sidebar-menu-item-count" id="favorites-count"></span>
+                    </div>
+
+                    <div class="sidebar-menu-item" data-view="trash" tabindex="0">
+                      <div class="sidebar-menu-item-content">
+                        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1M3 4h10M4 4v9a1 1 0 001 1h6a1 1 0 001-1V4M7 7v4M9 7v4" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round"/></svg>
+                        <span>Trash</span>
+                      </div>
+                      <span class="sidebar-menu-item-count" id="trash-count"></span>
+                    </div>
+                  </div>
+
+                  <!-- Notebooks section -->
+                  <div class="sidebar-menu-section-header" id="notebooks-header">
+                    <span>Notebooks</span>
+                    <button class="sidebar-section-action" id="create-notebook-btn" title="New Notebook">
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </button>
+                  </div>
+                  <div class="sidebar-menu" id="notebook-list">
+                    <!-- Dynamically populated -->
+                  </div>
+
+                  <!-- Tags section -->
+                  <div class="sidebar-menu-section-header" id="tags-header">
+                    <span>Tags</span>
+                  </div>
+                  <div class="sidebar-menu tag-list" id="tag-list">
+                    <!-- Dynamically populated -->
+                  </div>
+
+                  <!-- Status section -->
+                  <div class="sidebar-menu-section-header" id="status-header">
+                    <span>Status</span>
+                  </div>
+                  <div class="sidebar-menu note-statuses" id="status-nav">
+                    <div class="sidebar-menu-item" data-status="active" tabindex="0">
+                      <div class="sidebar-menu-item-content">
+                        <span class="note-status-label status-active"></span>
+                        <span>Active</span>
+                      </div>
+                    </div>
+                    <div class="sidebar-menu-item" data-status="onHold" tabindex="0">
+                      <div class="sidebar-menu-item-content">
+                        <span class="note-status-label status-onhold"></span>
+                        <span>On Hold</span>
+                      </div>
+                    </div>
+                    <div class="sidebar-menu-item" data-status="completed" tabindex="0">
+                      <div class="sidebar-menu-item-content">
+                        <span class="note-status-label status-completed"></span>
+                        <span>Completed</span>
+                      </div>
+                    </div>
+                    <div class="sidebar-menu-item" data-status="dropped" tabindex="0">
+                      <div class="sidebar-menu-item-content">
+                        <span class="note-status-label status-dropped"></span>
+                        <span>Dropped</span>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Sidebar bottom: sync + updates -->
+              <div class="sidebar-bottom">
+                <div class="sidebar-app-update-notification-view hidden" id="update-notification">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1" fill="none"/><path d="M7 4v4M7 10v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  <span>Update available</span>
+                </div>
+                <div class="sidebar-plugin-updates-notification-view hidden" id="plugin-update-notification">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1v8M4 6l3 3 3-3M3 12h8" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <span>Plugin updates</span>
+                </div>
+                <div class="sidebar-sync-status-view" id="sync-status">
+                  <span class="sync-icon synced" id="sync-icon"></span>
+                  <span id="sync-text">Synced</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar resize handle -->
+        <div class="resize-handle sidebar-resize" id="sidebar-resize" role="separator" aria-orientation="vertical"></div>
+
+        <!-- ════ NOTE LIST ════ -->
+        <div class="note-list-bar" id="note-list-bar">
+          <div class="note-list-bar-layout">
+            <div class="note-list-bar-layout-content">
+
+              <!-- Note list header -->
+              <div class="note-list-header" id="note-list-header">
+                <div class="note-list-header-title-bar">
+                  <span class="note-list-header-title" id="note-list-title">All Notes</span>
+                  <div class="note-list-header-options">
+                    <div class="note-list-header-dropdown" id="note-sort-dropdown">
+                      <button class="note-list-header-btn" id="note-sort-btn" title="Sort">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M2 3h10M2 7h7M2 11h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                      </button>
+                      <div class="dropdown-menu hidden" id="sort-menu">
+                        <div class="dropdown-item active" data-sort="updatedAt">Date Updated</div>
+                        <div class="dropdown-item" data-sort="createdAt">Date Created</div>
+                        <div class="dropdown-item" data-sort="title">Title</div>
+                        <div class="dropdown-separator"></div>
+                        <div class="dropdown-item" data-sort-dir="desc" id="sort-desc">Descending</div>
+                        <div class="dropdown-item" data-sort-dir="asc" id="sort-asc">Ascending</div>
+                      </div>
+                    </div>
+                    <button class="note-list-header-btn" id="note-view-toggle" title="Toggle view">
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="2" width="5" height="4" rx="1" stroke="currentColor" stroke-width="1" fill="none"/><rect x="8" y="2" width="5" height="4" rx="1" stroke="currentColor" stroke-width="1" fill="none"/><rect x="1" y="8" width="5" height="4" rx="1" stroke="currentColor" stroke-width="1" fill="none"/><rect x="8" y="8" width="5" height="4" rx="1" stroke="currentColor" stroke-width="1" fill="none"/></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="note-list-header-separator"></div>
+
+                <!-- Search bar -->
+                <div class="note-list-search-bar" id="note-list-search-bar">
+                  <svg class="search-icon" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                  <input type="text" id="note-search" class="note-list-search-input" placeholder="Search..." autocomplete="off" spellcheck="false">
+                  <kbd class="search-shortcut" id="search-shortcut">&#8984;&#8679;F</kbd>
+                </div>
+              </div>
+
+              <!-- Note list items -->
+              <div class="note-list-holder" id="note-list-holder" role="listbox" tabindex="0">
+                <!-- Note items injected by app.js -->
+              </div>
+
+              <!-- Empty state -->
+              <div class="note-list-bar-blank-slate hidden" id="note-list-empty">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                  <rect x="8" y="6" width="32" height="36" rx="4" stroke="currentColor" stroke-width="1.5" opacity=".3"/>
+                  <path d="M16 18h16M16 24h12M16 30h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".3"/>
+                </svg>
+                <p class="blank-title">No notes</p>
+                <p class="blank-subtitle">Create a new note to get started</p>
+                <button class="blank-action-btn" id="blank-new-note-btn">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  New Note
+                </button>
+              </div>
+
+              <!-- Invite friends panel (hidden) -->
+              <div class="note-list-bar-invite-friends-panel hidden" id="invite-friends-panel">
+                <p>Enjoying Inkdrop? Invite friends and earn free months!</p>
+                <button class="invite-btn" id="invite-friends-btn">Invite Friends</button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Note list resize handle -->
+        <div class="resize-handle notelist-resize" id="notelist-resize" role="separator" aria-orientation="vertical"></div>
+
+        <!-- ════ EDITOR LAYOUT ════ -->
+        <div class="editor-layout" id="editor-layout">
+
+          <!-- Editor blank slate (no note selected) -->
+          <div class="editor-blank-slate" id="editor-blank">
+            <div class="editor-placeholder">
+              <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                <rect x="12" y="8" width="40" height="48" rx="6" stroke="currentColor" stroke-width="1.5" opacity=".2"/>
+                <path d="M22 24h20M22 32h16M22 40h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".2"/>
+                <circle cx="32" cy="20" r="3" stroke="currentColor" stroke-width="1.2" opacity=".25"/>
+              </svg>
+              <h2>Create or select a note</h2>
+              <p>Your Markdown notes appear here</p>
+              <div class="editor-placeholder-actions">
+                <button class="editor-placeholder-btn" id="placeholder-new-note-btn">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  New Note
+                </button>
+                <button class="editor-placeholder-choose-template-button" id="choose-template-btn">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.1" fill="none"/><path d="M5 5h4M5 7.5h4M5 10h2" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+                  From Template
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active editor container (hidden until note selected) -->
+          <div class="editor" id="editor-container" style="display:none">
+
+            <!-- Editor header -->
+            <div class="editor-header-layout">
+              <!-- Breadcrumb -->
+              <div class="editor-breadcrumb" id="editor-breadcrumb">
+                <span class="breadcrumb-item" id="breadcrumb-notebook">
+                  <span class="notebook-icon" id="breadcrumb-notebook-icon"></span>
+                  <span class="breadcrumb-title" id="breadcrumb-notebook-name">Notebook</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- Title bar -->
+            <div class="editor-title-bar-layout" id="editor-title-bar">
+              <div class="editor-title-bar-left">
+                <span class="editor-title-bar-template-icon hidden" id="template-icon" title="Created from template">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1" fill="none"/><path d="M5 5h4M5 7h4M5 9h2" stroke="currentColor" stroke-width=".9" stroke-linecap="round"/></svg>
+                </span>
+                <span class="editor-title-bar-revision hidden" id="revision-badge" title="Viewing revision">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1" fill="none"/><path d="M6 3v3l2 1.5" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span class="editor-title-bar-conflicted hidden" id="conflicted-badge" title="Conflicted note">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1L1 13h12L7 1z" stroke="currentColor" stroke-width="1" fill="none" stroke-linejoin="round"/><path d="M7 5v4M7 11v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                </span>
+                <input type="text" class="editor-title-bar-input" id="note-title" placeholder="Untitled" spellcheck="false" autocomplete="off">
+              </div>
+
+              <div class="editor-title-bar-right">
+                <div class="editor-header-view-mode" id="view-mode-switcher">
+                  <button class="editor-viewmode-edit active" data-mode="edit" title="Edit (Cmd+Shift+E)">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M2 10l6-6 2 2-6 6H2v-2zM9 3l2-2 2 2-2 2-2-2z" stroke="currentColor" stroke-width="1" fill="none" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="editor-viewmode-preview" data-mode="sideBySide" title="Side by Side (Cmd+Shift+P)">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="2" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1" fill="none"/><line x1="7" y1="2" x2="7" y2="12" stroke="currentColor" stroke-width="1"/></svg>
+                  </button>
+                  <button class="editor-viewmode-preview" data-mode="preview" title="Preview (Cmd+Shift+M)">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M1 7s2.5-5 6-5 6 5 6 5-2.5 5-6 5-6-5-6-5z" stroke="currentColor" stroke-width="1" fill="none"/><circle cx="7" cy="7" r="2" stroke="currentColor" stroke-width="1" fill="none"/></svg>
+                  </button>
+                </div>
+
+                <div class="editor-header-button-spacer"></div>
+
+                <div class="editor-floating-actions" id="editor-actions">
+                  <button class="editor-action-btn" id="note-pin" title="Pin note">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M9 1L5 5 3 4 1 6l4 4-1 3 3-1 4 4 2-2-1-2 4-4z" stroke="currentColor" stroke-width="1" fill="none" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="editor-action-btn" id="note-share" title="Share note">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><circle cx="10" cy="3" r="2" stroke="currentColor" stroke-width="1" fill="none"/><circle cx="4" cy="7" r="2" stroke="currentColor" stroke-width="1" fill="none"/><circle cx="10" cy="11" r="2" stroke="currentColor" stroke-width="1" fill="none"/><path d="M6 6l2-2M6 8l2 2" stroke="currentColor" stroke-width="1"/></svg>
+                  </button>
+                  <button class="editor-action-btn" id="note-revisions" title="Note revisions">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1" fill="none"/><path d="M7 3v4l3 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button class="editor-action-btn" id="note-more" title="More actions">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><circle cx="7" cy="3" r="1.2"/><circle cx="7" cy="7" r="1.2"/><circle cx="7" cy="11" r="1.2"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Meta layout: notebook, tags, status -->
+            <div class="editor-meta-layout" id="editor-meta">
+              <div class="editor-meta-notebook">
+                <span class="field-label">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M2 1h8a1 1 0 011 1v8a1 1 0 01-1 1H2a1 1 0 01-1-1V2a1 1 0 011-1z" stroke="currentColor" stroke-width=".9" fill="none"/><path d="M4 1v10" stroke="currentColor" stroke-width=".9"/></svg>
+                  Notebook
+                </span>
+                <div class="notebook-picker" id="notebook-picker">
+                  <span class="notebook-icon" id="note-notebook-icon"></span>
+                  <select id="note-notebook" class="notebook-name"></select>
+                </div>
+              </div>
+
+              <div class="editor-meta-tags">
+                <span class="field-label">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M1 6.5V2a1 1 0 011-1h4.5L11 5.5 6.5 10 1 6.5z" stroke="currentColor" stroke-width=".9" fill="none" stroke-linejoin="round"/><circle cx="4" cy="4" r=".8"/></svg>
+                  Tags
+                </span>
+                <div class="note-tags-bar" id="note-tags-bar">
+                  <div class="note-tags-bar-item-list" id="note-tags-list">
+                    <!-- Tag pills inserted by app.js -->
+                  </div>
+                  <input type="text" class="note-tags-bar-input" id="note-tag-input" placeholder="Add tag..." autocomplete="off" spellcheck="false">
+                  <div class="note-tags-bar-dropdown-menu hidden" id="tag-suggestions">
+                    <!-- Autocomplete suggestions -->
+                  </div>
+                </div>
+              </div>
+
+              <div class="editor-meta-status">
+                <span class="field-label">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width=".9" fill="none"/><circle cx="6" cy="6" r="2"/></svg>
+                  Status
+                </span>
+                <div class="note-status-picker" id="note-status-picker">
+                  <select id="note-status" class="note-status-select">
+                    <option value="none">None</option>
+                    <option value="active">Active</option>
+                    <option value="onHold">On Hold</option>
+                    <option value="completed">Completed</option>
+                    <option value="dropped">Dropped</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Editor body -->
+            <div class="editor-body" id="editor-body">
+
+              <!-- Floating markdown toolbar -->
+              <div class="cm-floating-toolbar hidden" id="cm-toolbar">
+                <button class="cm-toolbar-btn" data-cmd="bold" title="Bold (Cmd+B)"><strong>B</strong></button>
+                <button class="cm-toolbar-btn" data-cmd="italic" title="Italic (Cmd+I)"><em>I</em></button>
+                <button class="cm-toolbar-btn" data-cmd="strikethrough" title="Strikethrough"><s>S</s></button>
+                <span class="cm-toolbar-separator"></span>
+                <button class="cm-toolbar-btn" data-cmd="heading" title="Heading">#</button>
+                <button class="cm-toolbar-btn" data-cmd="quote" title="Blockquote">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 4h3L4 10H2L3 4zm5 0h3L9 10H7L8 4z"/></svg>
+                </button>
+                <button class="cm-toolbar-btn" data-cmd="code" title="Inline Code">&lt;/&gt;</button>
+                <button class="cm-toolbar-btn" data-cmd="codeblock" title="Code Block">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M4 4L1 7l3 3M10 4l3 3-3 3M6 11l2-8" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <span class="cm-toolbar-separator"></span>
+                <button class="cm-toolbar-btn" data-cmd="ul" title="Bullet List">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><circle cx="3" cy="4" r="1.2"/><circle cx="3" cy="7" r="1.2"/><circle cx="3" cy="10" r="1.2"/><path d="M6 4h6M6 7h6M6 10h6" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+                </button>
+                <button class="cm-toolbar-btn" data-cmd="ol" title="Numbered List">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><text x="1.5" y="5.5" font-size="5" font-weight="600">1</text><text x="1.5" y="8.5" font-size="5" font-weight="600">2</text><text x="1.5" y="11.5" font-size="5" font-weight="600">3</text><path d="M6 4h6M6 7h6M6 10h6" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+                </button>
+                <button class="cm-toolbar-btn" data-cmd="task" title="Task List">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="3" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1" fill="none"/><path d="M2.5 5.5l1.5 1.5 2.5-3" stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 4h5M8 7h5M8 10h5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+                </button>
+                <span class="cm-toolbar-separator"></span>
+                <button class="cm-toolbar-btn" data-cmd="link" title="Link (Cmd+K)">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M6 8l2-2M4.5 9.5a2.5 2.5 0 010-3.5l1-1a2.5 2.5 0 013.5 0M8.5 4.5a2.5 2.5 0 010 3.5l-1 1a2.5 2.5 0 01-3.5 0" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round"/></svg>
+                </button>
+                <button class="cm-toolbar-btn" data-cmd="image" title="Insert Image">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="2" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1" fill="none"/><circle cx="4.5" cy="5" r="1.2"/><path d="M1 10l3-3 2 2 3-4 4 5" stroke="currentColor" stroke-width="1" fill="none" stroke-linejoin="round"/></svg>
+                </button>
+                <button class="cm-toolbar-btn" data-cmd="table" title="Insert Table">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="2" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1" fill="none"/><path d="M1 5.5h12M1 8.5h12M5 2v10M9 2v10" stroke="currentColor" stroke-width=".8"/></svg>
+                </button>
+                <button class="cm-toolbar-btn" data-cmd="hr" title="Horizontal Rule">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 2"/></svg>
+                </button>
+                <button class="cm-toolbar-btn" data-cmd="math" title="Math Block">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><text x="2" y="11" font-size="10" font-style="italic" font-family="serif">f</text><text x="7" y="9" font-size="7">(x)</text></svg>
+                </button>
+              </div>
+
+              <!-- Image resize toolbar (shown on image click) -->
+              <div class="cm-image-resize-toolbar hidden" id="image-resize-toolbar">
+                <button data-size="small" title="Small">S</button>
+                <button data-size="medium" title="Medium">M</button>
+                <button data-size="large" title="Large" class="active">L</button>
+                <button data-size="full" title="Full width">Full</button>
+              </div>
+
+              <!-- Note link preview tooltip -->
+              <div class="cm-note-link-preview hidden" id="note-link-preview">
+                <div class="note-link-preview-title" id="note-link-preview-title"></div>
+                <div class="note-link-preview-body" id="note-link-preview-body"></div>
+              </div>
+
+              <!-- CodeMirror editor wrapper -->
+              <div class="cm-editor" id="cm-editor-wrapper">
+                <div class="cm-scroller" id="cm-scroller">
+                  <textarea id="markdown-editor" class="cm-content" placeholder="Start writing in Markdown..." spellcheck="true" autocomplete="off"></textarea>
+                </div>
+              </div>
+
+              <!-- Preview pane (shown in preview / side-by-side mode) -->
+              <div class="preview-pane hidden" id="preview-pane">
+                <div class="preview-pane-content" id="preview-content"></div>
+              </div>
+
+            </div>
+
+            <!-- Editor AI features (inline prompt) -->
+            <div class="editor-ai-inline-prompt-input hidden" id="ai-inline-prompt">
+              <input type="text" id="ai-prompt-input" placeholder="Ask AI to write..." autocomplete="off">
+              <button class="ai-prompt-submit" id="ai-prompt-submit">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M1 7h10M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="ai-prompt-cancel" id="ai-prompt-cancel">Cancel</button>
+            </div>
+
+            <!-- AI popover (response preview) -->
+            <div class="editor-ai-popover hidden" id="ai-popover">
+              <div class="ai-popover-content" id="ai-popover-content"></div>
+              <div class="ai-popover-actions">
+                <button class="ai-action-btn" id="ai-accept">Accept</button>
+                <button class="ai-action-btn ai-action-secondary" id="ai-retry">Retry</button>
+                <button class="ai-action-btn ai-action-secondary" id="ai-discard">Discard</button>
+              </div>
+            </div>
+
+            <!-- AI preset prompt tooltip -->
+            <div class="editor-ai-preset-prompt-tooltip hidden" id="ai-presets">
+              <div class="ai-preset-item" data-preset="summarize">Summarize</div>
+              <div class="ai-preset-item" data-preset="expand">Expand</div>
+              <div class="ai-preset-item" data-preset="simplify">Simplify</div>
+              <div class="ai-preset-item" data-preset="fix-grammar">Fix Grammar</div>
+              <div class="ai-preset-item" data-preset="translate">Translate</div>
+              <div class="ai-preset-item" data-preset="explain">Explain</div>
+            </div>
+
+            <!-- Status bar -->
+            <div class="editor-status-bar-layout" id="editor-status-bar">
+              <div class="editor-status-bar-left">
+                <span class="status-item" id="word-count">0 words</span>
+                <span class="status-separator"></span>
+                <span class="status-item" id="char-count">0 characters</span>
+                <span class="status-separator"></span>
+                <span class="status-item" id="line-count">Ln 1, Col 1</span>
+              </div>
+              <div class="editor-status-bar-right">
+                <span class="status-item syncing hidden" id="saving-indicator">
+                  <svg class="spin" width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1a5 5 0 014.3 2.5" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>
+                  Saving...
+                </span>
+                <span class="status-item" id="last-saved">Not saved</span>
+                <span class="status-separator"></span>
+                <span class="status-item" id="editor-mode-indicator">Markdown</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Multiple notes selected view -->
+          <div class="editor-multiple-notes-view hidden" id="multiple-notes-view">
+            <div class="multiple-notes-content">
+              <h2 id="multi-select-count">0 notes selected</h2>
+              <div class="multi-select-actions">
+                <button class="multi-btn" id="multi-move">Move to Notebook</button>
+                <button class="multi-btn" id="multi-tag">Add Tag</button>
+                <button class="multi-btn" id="multi-status">Set Status</button>
+                <button class="multi-btn multi-btn-danger" id="multi-trash">Move to Trash</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Editor window bar (for detached editor) -->
+          <div class="editor-window-bar hidden" id="editor-window-bar">
+            <span id="editor-window-title">Inkdrop Editor</span>
+            <button class="editor-window-bar-btn" id="editor-window-close">
+              <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+
+        </div>
+
+      </div><!-- /main-content -->
+
+    </div><!-- /main-app -->
+
+  </div><!-- /app-container -->
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!--                    MODALS                          -->
+  <!-- ═══════════════════════════════════════════════════ -->
+
+  <!-- Modal overlay backdrop -->
+  <div class="modal-backdrop hidden" id="modal-backdrop"></div>
+
+  <!-- ── Create / Edit Notebook Modal ── -->
+  <div class="dialog-frame hidden" id="notebook-modal" role="dialog" aria-labelledby="notebook-modal-title">
+    <div class="dialog-header">
+      <h3 id="notebook-modal-title">New Notebook</h3>
+      <button class="dialog-close" data-close="notebook-modal">
+        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="dialog-body">
+      <div class="form-field">
+        <label for="notebook-name-input">Name</label>
+        <input type="text" id="notebook-name-input" placeholder="Notebook name" autofocus>
+      </div>
+      <div class="form-field">
+        <label for="notebook-parent-select">Parent Notebook</label>
+        <select id="notebook-parent-select">
+          <option value="">None (root)</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Icon</label>
+        <div class="change-notebook-icon-dialog" id="notebook-icon-picker">
+          <button class="icon-option" data-icon="default" title="Default">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12a1 1 0 011 1v10a1 1 0 01-1 1H2a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1" fill="none"/><path d="M4 2v12" stroke="currentColor" stroke-width="1"/></svg>
+          </button>
+          <button class="icon-option" data-icon="star" title="Star">&#9733;</button>
+          <button class="icon-option" data-icon="heart" title="Heart">&#9829;</button>
+          <button class="icon-option" data-icon="code" title="Code">&lt;/&gt;</button>
+          <button class="icon-option" data-icon="book" title="Book">&#128214;</button>
+          <button class="icon-option" data-icon="briefcase" title="Work">&#128188;</button>
+          <button class="icon-option" data-icon="bulb" title="Ideas">&#128161;</button>
+          <button class="icon-option" data-icon="lock" title="Private">&#128274;</button>
+        </div>
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <button class="dialog-btn dialog-btn-secondary" data-close="notebook-modal">Cancel</button>
+      <button class="dialog-btn dialog-btn-primary" id="notebook-save-btn">Create</button>
+    </div>
+  </div>
+
+  <!-- ── Move Note Modal ── -->
+  <div class="dialog-frame dialog-move-notes hidden" id="move-note-modal" role="dialog" aria-labelledby="move-modal-title">
+    <div class="dialog-header">
+      <h3 id="move-modal-title">Move to Notebook</h3>
+      <button class="dialog-close" data-close="move-note-modal">
+        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="dialog-body">
+      <div class="move-search">
+        <input type="text" id="move-notebook-search" placeholder="Search notebooks..." autocomplete="off">
+      </div>
+      <div class="notebook-list-bar" id="move-notebook-list">
+        <!-- Populated by app.js -->
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <button class="dialog-btn dialog-btn-secondary" data-close="move-note-modal">Cancel</button>
+      <button class="dialog-btn dialog-btn-primary" id="move-confirm-btn" disabled>Move</button>
+    </div>
+  </div>
+
+  <!-- ── Share Note Modal ── -->
+  <div class="dialog-frame dialog-share-note hidden" id="share-note-modal" role="dialog" aria-labelledby="share-modal-title">
+    <div class="dialog-header">
+      <h3 id="share-modal-title">Share Note</h3>
+      <button class="dialog-close" data-close="share-note-modal">
+        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="dialog-body">
+      <div class="share-toggle">
+        <label class="toggle-label">
+          <input type="checkbox" id="share-toggle-public">
+          <span class="toggle-switch"></span>
+          <span>Enable public sharing</span>
+        </label>
+      </div>
+      <div class="share-url-section hidden" id="share-url-section">
+        <label>Share URL</label>
+        <div class="share-url-row">
+          <input type="text" id="share-url" readonly>
+          <button class="dialog-btn dialog-btn-secondary" id="share-copy-btn">Copy</button>
+        </div>
+        <p class="share-note-hint">Anyone with this link can view this note.</p>
+      </div>
+      <div class="share-password-section hidden" id="share-password-section">
+        <label class="toggle-label">
+          <input type="checkbox" id="share-toggle-password">
+          <span class="toggle-switch"></span>
+          <span>Require password</span>
+        </label>
+        <input type="password" id="share-password" placeholder="Password" class="hidden">
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <button class="dialog-btn dialog-btn-secondary" data-close="share-note-modal">Close</button>
+    </div>
+  </div>
+
+  <!-- ── Revision History Modal ── -->
+  <div class="dialog-frame note-revisions-dialog hidden" id="revision-modal" role="dialog" aria-labelledby="revision-modal-title">
+    <div class="dialog-header">
+      <h3 id="revision-modal-title">Note Revisions</h3>
+      <button class="dialog-close" data-close="revision-modal">
+        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="dialog-body dialog-body-split">
+      <div class="revision-list" id="revision-list">
+        <!-- Revision items populated by app.js -->
+      </div>
+      <div class="revision-preview" id="revision-preview">
+        <div class="revision-preview-header">
+          <span class="revision-label" id="revision-preview-label">Select a revision</span>
+          <button class="dialog-btn dialog-btn-secondary hidden" id="revision-restore-btn">Restore</button>
+        </div>
+        <div class="revision-preview-content" id="revision-preview-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Image Viewer Modal ── -->
+  <div class="dialog-frame dialog-image-viewer hidden" id="image-viewer-modal" role="dialog">
+    <div class="image-viewer-container">
+      <div class="image-viewer-toolbar" id="image-viewer-toolbar">
+        <button class="image-viewer-btn" id="img-zoom-in" title="Zoom In">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M11 11l3.5 3.5M5 7h4M7 5v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </button>
+        <button class="image-viewer-btn" id="img-zoom-out" title="Zoom Out">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M11 11l3.5 3.5M5 7h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </button>
+        <button class="image-viewer-btn" id="img-fit" title="Fit to Window">Fit</button>
+        <button class="image-viewer-btn" id="img-actual" title="Actual Size">1:1</button>
+        <div class="image-viewer-spacer"></div>
+        <button class="image-viewer-btn" id="img-close" title="Close">
+          <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="image-viewer-content" id="image-viewer-content">
+        <img id="image-viewer-img" alt="Image preview">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Preferences Modal ── -->
+  <div class="dialog-frame dialog-preferences hidden" id="preferences-modal" role="dialog" aria-labelledby="prefs-title">
+    <div class="dialog-header">
+      <h3 id="prefs-title">Preferences</h3>
+      <button class="dialog-close" data-close="preferences-modal">
+        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="dialog-body dialog-body-tabbed">
+      <div class="prefs-tabs" id="prefs-tabs">
+        <button class="prefs-tab active" data-tab="general">General</button>
+        <button class="prefs-tab" data-tab="editor">Editor</button>
+        <button class="prefs-tab" data-tab="plugins">Plugins</button>
+        <button class="prefs-tab" data-tab="themes">Themes</button>
+        <button class="prefs-tab" data-tab="keymaps">Keymaps</button>
+        <button class="prefs-tab" data-tab="account">Account</button>
+        <button class="prefs-tab" data-tab="sync">Sync</button>
+        <button class="prefs-tab" data-tab="backup">Backup</button>
+      </div>
+      <div class="prefs-panel-container" id="prefs-panel-container">
+
+        <!-- General -->
+        <div class="prefs-panel active" data-panel="general">
+          <div class="prefs-section">
+            <h4>Appearance</h4>
+            <div class="prefs-option">
+              <label>Theme</label>
+              <select id="pref-theme">
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+                <option value="system">System</option>
+              </select>
+            </div>
+            <div class="prefs-option">
+              <label>UI Theme</label>
+              <select id="pref-ui-theme">
+                <option value="default-dark">Default Dark</option>
+                <option value="default-light">Default Light</option>
+              </select>
+            </div>
+            <div class="prefs-option">
+              <label>Syntax Theme</label>
+              <select id="pref-syntax-theme">
+                <option value="default-dark">Default Dark</option>
+                <option value="default-light">Default Light</option>
+              </select>
+            </div>
+          </div>
+          <div class="prefs-section">
+            <h4>Behavior</h4>
+            <div class="prefs-option">
+              <label>Open at login</label>
+              <input type="checkbox" id="pref-open-login">
+            </div>
+            <div class="prefs-option">
+              <label>Enable tray icon</label>
+              <input type="checkbox" id="pref-tray" checked>
+            </div>
+            <div class="prefs-option">
+              <label>Distraction-free mode</label>
+              <input type="checkbox" id="pref-distraction-free">
+            </div>
+            <div class="prefs-option">
+              <label>Side-by-side layout</label>
+              <input type="checkbox" id="pref-side-by-side">
+            </div>
+          </div>
+        </div>
+
+        <!-- Editor -->
+        <div class="prefs-panel" data-panel="editor">
+          <div class="prefs-section">
+            <h4>Editor</h4>
+            <div class="prefs-option">
+              <label>Font Family</label>
+              <input type="text" id="pref-font-family" value="'SF Mono', Menlo, monospace">
+            </div>
+            <div class="prefs-option">
+              <label>Font Size</label>
+              <input type="number" id="pref-font-size" value="15" min="8" max="32">
+            </div>
+            <div class="prefs-option">
+              <label>Line Height</label>
+              <input type="number" id="pref-line-height" value="1.7" min="1" max="3" step="0.1">
+            </div>
+            <div class="prefs-option">
+              <label>Tab Size</label>
+              <input type="number" id="pref-tab-size" value="2" min="1" max="8">
+            </div>
+            <div class="prefs-option">
+              <label>Soft Wrap</label>
+              <input type="checkbox" id="pref-soft-wrap" checked>
+            </div>
+            <div class="prefs-option">
+              <label>Show line numbers</label>
+              <input type="checkbox" id="pref-line-numbers">
+            </div>
+            <div class="prefs-option">
+              <label>Vim keybindings</label>
+              <input type="checkbox" id="pref-vim">
+            </div>
+          </div>
+          <div class="prefs-section">
+            <h4>Preview</h4>
+            <div class="prefs-option">
+              <label>Preview font size</label>
+              <input type="number" id="pref-preview-font-size" value="16" min="8" max="32">
+            </div>
+            <div class="prefs-option">
+              <label>Sanitize HTML in preview</label>
+              <input type="checkbox" id="pref-sanitize-html" checked>
+            </div>
+            <div class="prefs-option">
+              <label>Math rendering (KaTeX)</label>
+              <input type="checkbox" id="pref-math" checked>
+            </div>
+          </div>
+        </div>
+
+        <!-- Plugins -->
+        <div class="prefs-panel" data-panel="plugins">
+          <div class="prefs-section">
+            <h4>Installed Plugins</h4>
+            <div class="plugin-search">
+              <input type="text" id="plugin-search-input" placeholder="Search plugins...">
+            </div>
+            <div class="plugin-list" id="installed-plugin-list">
+              <div class="plugin-item">
+                <div class="plugin-info">
+                  <strong>export-as-html</strong>
+                  <span class="plugin-version">v1.0.0</span>
+                  <p class="plugin-desc">Export notes as HTML files</p>
+                </div>
+                <div class="plugin-actions">
+                  <button class="plugin-btn" data-action="disable">Disable</button>
+                  <button class="plugin-btn plugin-btn-danger" data-action="uninstall">Uninstall</button>
+                </div>
+              </div>
+              <div class="plugin-item">
+                <div class="plugin-info">
+                  <strong>export-as-markdown</strong>
+                  <span class="plugin-version">v1.0.0</span>
+                  <p class="plugin-desc">Export notes as Markdown files</p>
+                </div>
+                <div class="plugin-actions">
+                  <button class="plugin-btn" data-action="disable">Disable</button>
+                  <button class="plugin-btn plugin-btn-danger" data-action="uninstall">Uninstall</button>
+                </div>
+              </div>
+              <div class="plugin-item">
+                <div class="plugin-info">
+                  <strong>export-print</strong>
+                  <span class="plugin-version">v1.0.0</span>
+                  <p class="plugin-desc">Print notes</p>
+                </div>
+                <div class="plugin-actions">
+                  <button class="plugin-btn" data-action="disable">Disable</button>
+                  <button class="plugin-btn plugin-btn-danger" data-action="uninstall">Uninstall</button>
+                </div>
+              </div>
+              <div class="plugin-item">
+                <div class="plugin-info">
+                  <strong>import-markdown</strong>
+                  <span class="plugin-version">v1.0.0</span>
+                  <p class="plugin-desc">Import Markdown files as notes</p>
+                </div>
+                <div class="plugin-actions">
+                  <button class="plugin-btn" data-action="disable">Disable</button>
+                  <button class="plugin-btn plugin-btn-danger" data-action="uninstall">Uninstall</button>
+                </div>
+              </div>
+              <div class="plugin-item">
+                <div class="plugin-info">
+                  <strong>import-html</strong>
+                  <span class="plugin-version">v1.0.0</span>
+                  <p class="plugin-desc">Import HTML files as notes</p>
+                </div>
+                <div class="plugin-actions">
+                  <button class="plugin-btn" data-action="disable">Disable</button>
+                  <button class="plugin-btn plugin-btn-danger" data-action="uninstall">Uninstall</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="prefs-section">
+            <h4>Install Plugins</h4>
+            <div class="plugin-search">
+              <input type="text" id="plugin-install-search" placeholder="Search available plugins...">
+              <button class="dialog-btn dialog-btn-primary" id="plugin-search-btn">Search</button>
+            </div>
+            <div class="plugin-list" id="available-plugin-list">
+              <!-- Populated by search -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Themes -->
+        <div class="prefs-panel" data-panel="themes">
+          <div class="prefs-section">
+            <h4>UI Themes</h4>
+            <div class="theme-grid" id="ui-theme-grid">
+              <div class="theme-card active" data-theme-id="default-dark">
+                <div class="theme-preview theme-preview-dark"></div>
+                <span>Default Dark</span>
+              </div>
+              <div class="theme-card" data-theme-id="default-light">
+                <div class="theme-preview theme-preview-light"></div>
+                <span>Default Light</span>
+              </div>
+            </div>
+          </div>
+          <div class="prefs-section">
+            <h4>Syntax Themes</h4>
+            <div class="theme-grid" id="syntax-theme-grid">
+              <div class="theme-card active" data-theme-id="default-dark">
+                <div class="theme-preview theme-preview-syntax-dark"></div>
+                <span>Default Dark</span>
+              </div>
+              <div class="theme-card" data-theme-id="default-light">
+                <div class="theme-preview theme-preview-syntax-light"></div>
+                <span>Default Light</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Keymaps -->
+        <div class="prefs-panel" data-panel="keymaps">
+          <div class="prefs-section">
+            <h4>Keymap Bindings</h4>
+            <p class="prefs-hint">Customize keyboard shortcuts. Changes take effect immediately.</p>
+            <div class="keymap-list" id="keymap-list">
+              <div class="keymap-item"><span class="keymap-action">New Note</span><kbd>Cmd+N</kbd></div>
+              <div class="keymap-item"><span class="keymap-action">Save Note</span><kbd>Cmd+S</kbd></div>
+              <div class="keymap-item"><span class="keymap-action">Find</span><kbd>Cmd+F</kbd></div>
+              <div class="keymap-item"><span class="keymap-action">Replace</span><kbd>Cmd+H</kbd></div>
+              <div class="keymap-item"><span class="keymap-action">Toggle Sidebar</span><kbd>Cmd+\</kbd></div>
+              <div class="keymap-item"><span class="keymap-action">Toggle Preview</span><kbd>Cmd+Shift+M</kbd></div>
+              <div class="keymap-item"><span class="keymap-action">Toggle Side-by-Side</span><kbd>Cmd+Shift+P</kbd></div>
+              <div class="keymap-item"><span class="keymap-action">Bold</span><kbd>Cmd+B</kbd></div>
+              <div class="keymap-item"><span class="keymap-action">Italic</span><kbd>Cmd+I</kbd></div>
+              <div class="keymap-item"><span class="keymap-action">Link</span><kbd>Cmd+K</kbd></div>
+              <div class="keymap-item"><span class="keymap-action">Preferences</span><kbd>Cmd+,</kbd></div>
+              <div class="keymap-item"><span class="keymap-action">Command Palette</span><kbd>Cmd+Shift+P</kbd></div>
+              <div class="keymap-item"><span class="keymap-action">Quick Search</span><kbd>Cmd+Shift+F</kbd></div>
+              <div class="keymap-item"><span class="keymap-action">Zoom In</span><kbd>Cmd+=</kbd></div>
+              <div class="keymap-item"><span class="keymap-action">Zoom Out</span><kbd>Cmd+-</kbd></div>
+              <div class="keymap-item"><span class="keymap-action">Reset Zoom</span><kbd>Cmd+0</kbd></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account -->
+        <div class="prefs-panel" data-panel="account">
+          <div class="prefs-section">
+            <h4>Account</h4>
+            <div class="account-info" id="account-info">
+              <div class="account-avatar" id="account-avatar">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="currentColor"><circle cx="24" cy="18" r="8" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 42c0-8.8 7.2-16 16-16s16 7.2 16 16" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+              </div>
+              <div class="account-details">
+                <p class="account-email" id="account-email">Not logged in</p>
+                <p class="account-plan" id="account-plan">Free</p>
+              </div>
+            </div>
+            <div class="account-actions">
+              <button class="dialog-btn dialog-btn-primary" id="account-login-btn">Log In</button>
+              <button class="dialog-btn dialog-btn-secondary hidden" id="account-logout-btn">Log Out</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sync -->
+        <div class="prefs-panel" data-panel="sync">
+          <div class="prefs-section">
+            <h4>Sync Settings</h4>
+            <div class="prefs-option">
+              <label>Enable sync</label>
+              <input type="checkbox" id="pref-sync-enabled">
+            </div>
+            <div class="prefs-option">
+              <label>Sync on launch</label>
+              <input type="checkbox" id="pref-sync-on-launch" checked>
+            </div>
+            <div class="prefs-option">
+              <label>Auto sync interval (minutes)</label>
+              <input type="number" id="pref-sync-interval" value="10" min="1" max="60">
+            </div>
+            <div class="prefs-option">
+              <label>Server URL</label>
+              <input type="text" id="pref-sync-server" placeholder="https://api.inkdrop.app">
+            </div>
+            <div class="sync-status-details" id="sync-status-details">
+              <p><strong>Last sync:</strong> <span id="pref-last-sync">Never</span></p>
+              <p><strong>Status:</strong> <span id="pref-sync-status">Not synced</span></p>
+            </div>
+            <button class="dialog-btn dialog-btn-primary" id="pref-sync-now-btn">Sync Now</button>
+          </div>
+          <div class="prefs-section">
+            <h4>End-to-End Encryption (E2EE)</h4>
+            <div class="prefs-option">
+              <label>Enable E2EE</label>
+              <input type="checkbox" id="pref-e2ee">
+            </div>
+            <p class="prefs-hint">When enabled, your notes are encrypted locally before syncing. Only you can decrypt them.</p>
+          </div>
+        </div>
+
+        <!-- Backup -->
+        <div class="prefs-panel" data-panel="backup">
+          <div class="prefs-section">
+            <h4>Backup</h4>
+            <div class="prefs-option">
+              <label>Auto backup</label>
+              <input type="checkbox" id="pref-auto-backup">
+            </div>
+            <div class="prefs-option">
+              <label>Backup location</label>
+              <div class="input-with-btn">
+                <input type="text" id="pref-backup-path" placeholder="~/Inkdrop/Backups" readonly>
+                <button class="dialog-btn dialog-btn-secondary" id="pref-backup-browse">Browse</button>
+              </div>
+            </div>
+            <div class="backup-actions">
+              <button class="dialog-btn dialog-btn-primary" id="backup-now-btn">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Backup Now
+              </button>
+              <button class="dialog-btn dialog-btn-secondary" id="restore-backup-btn">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 9V1M4 4l3-3 3 3M2 11h10" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Restore from Backup
+              </button>
+            </div>
+            <div class="prefs-section">
+              <h4>Recent Backups</h4>
+              <div class="backup-list" id="backup-list">
+                <p class="prefs-hint">No backups yet</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Template Picker Modal ── -->
+  <div class="dialog-frame choose-template-dialog hidden" id="template-picker-modal" role="dialog" aria-labelledby="template-title">
+    <div class="dialog-header">
+      <h3 id="template-title">Choose Template</h3>
+      <button class="dialog-close" data-close="template-picker-modal">
+        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="dialog-body">
+      <div class="template-picker-search">
+        <input type="text" id="template-search" placeholder="Search templates..." autocomplete="off">
+      </div>
+      <div class="editor-template-picker" id="template-list">
+        <div class="template-item" data-template="blank">
+          <div class="template-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+          </div>
+          <div class="template-info">
+            <strong>Blank Note</strong>
+            <p>Start with an empty note</p>
+          </div>
+        </div>
+        <div class="template-item" data-template="meeting">
+          <div class="template-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+          </div>
+          <div class="template-info">
+            <strong>Meeting Notes</strong>
+            <p>Agenda, attendees, action items</p>
+          </div>
+        </div>
+        <div class="template-item" data-template="daily">
+          <div class="template-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M3 9h18M8 3v3M16 3v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          </div>
+          <div class="template-info">
+            <strong>Daily Journal</strong>
+            <p>Daily reflection and task tracking</p>
+          </div>
+        </div>
+        <div class="template-item" data-template="bug">
+          <div class="template-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M12 8v5M12 15v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="template-info">
+            <strong>Bug Report</strong>
+            <p>Steps to reproduce, expected vs actual</p>
+          </div>
+        </div>
+        <div class="template-item" data-template="review">
+          <div class="template-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l2.2 4.5 5 .7-3.6 3.5.9 5L12 15.5 7.5 17.7l.9-5L4.8 9.2l5-.7z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="template-info">
+            <strong>Code Review</strong>
+            <p>PR checklist and review notes</p>
+          </div>
+        </div>
+        <div class="template-item" data-template="project">
+          <div class="template-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 7h18v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7zM3 7l3-4h12l3 4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/><path d="M10 11h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          </div>
+          <div class="template-info">
+            <strong>Project Plan</strong>
+            <p>Goals, milestones, timeline, risks</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Export Modal ── -->
+  <div class="dialog-frame hidden" id="export-modal" role="dialog" aria-labelledby="export-title">
+    <div class="dialog-header">
+      <h3 id="export-title">Export Notes</h3>
+      <button class="dialog-close" data-close="export-modal">
+        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="dialog-body">
+      <div class="export-options">
+        <label class="export-option">
+          <input type="radio" name="export-format" value="markdown" checked>
+          <div class="export-option-content">
+            <strong>Markdown (.md)</strong>
+            <p>Export as individual Markdown files</p>
+          </div>
+        </label>
+        <label class="export-option">
+          <input type="radio" name="export-format" value="html">
+          <div class="export-option-content">
+            <strong>HTML (.html)</strong>
+            <p>Export as rendered HTML files</p>
+          </div>
+        </label>
+        <label class="export-option">
+          <input type="radio" name="export-format" value="json">
+          <div class="export-option-content">
+            <strong>JSON (.json)</strong>
+            <p>Export as JSON for backup or migration</p>
+          </div>
+        </label>
+        <label class="export-option">
+          <input type="radio" name="export-format" value="pdf">
+          <div class="export-option-content">
+            <strong>PDF (.pdf)</strong>
+            <p>Export for printing and sharing</p>
+          </div>
+        </label>
+      </div>
+      <div class="export-scope">
+        <label>
+          <input type="radio" name="export-scope" value="current" checked> Current note
+        </label>
+        <label>
+          <input type="radio" name="export-scope" value="notebook"> All notes in notebook
+        </label>
+        <label>
+          <input type="radio" name="export-scope" value="all"> All notes
+        </label>
+      </div>
+      <div class="export-progress hidden" id="export-progress">
+        <div class="progress-bar"><div class="progress-fill" id="export-progress-fill"></div></div>
+        <span id="export-progress-text">Exporting...</span>
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <button class="dialog-btn dialog-btn-secondary" data-close="export-modal">Cancel</button>
+      <button class="dialog-btn dialog-btn-primary" id="export-btn">Export</button>
+    </div>
+  </div>
+
+  <!-- ── Import Modal ── -->
+  <div class="dialog-frame hidden" id="import-modal" role="dialog" aria-labelledby="import-title">
+    <div class="dialog-header">
+      <h3 id="import-title">Import Notes</h3>
+      <button class="dialog-close" data-close="import-modal">
+        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="dialog-body">
+      <div class="import-dropzone" id="import-dropzone">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="currentColor" opacity=".3"><path d="M24 8v24M16 24l8 8 8-8M8 36h32" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <p>Drop files here or click to browse</p>
+        <p class="import-hint">Supports .md, .html, .txt, .json</p>
+        <input type="file" id="import-file-input" multiple accept=".md,.markdown,.html,.htm,.txt,.json" class="hidden">
+      </div>
+      <div class="import-file-list hidden" id="import-file-list">
+        <!-- Populated after file selection -->
+      </div>
+      <div class="import-options">
+        <label>
+          <input type="checkbox" id="import-into-notebook"> Import into specific notebook
+        </label>
+        <select id="import-target-notebook" class="hidden">
+          <!-- Populated by app.js -->
+        </select>
+      </div>
+      <div class="import-progress hidden" id="import-progress">
+        <div class="progress-bar"><div class="progress-fill" id="import-progress-fill"></div></div>
+        <span id="import-progress-text">Importing...</span>
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <button class="dialog-btn dialog-btn-secondary" data-close="import-modal">Cancel</button>
+      <button class="dialog-btn dialog-btn-primary" id="import-btn" disabled>Import</button>
+    </div>
+  </div>
+
+  <!-- ── Command Palette ── -->
+  <div class="dialog-frame command-palette hidden" id="command-palette" role="dialog" aria-label="Command Palette">
+    <div class="command-palette-input-wrap">
+      <svg class="command-palette-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M5 3l6 5-6 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <input type="text" id="command-palette-input" placeholder="Type a command..." autocomplete="off" spellcheck="false">
+    </div>
+    <div class="command-palette-results" id="command-palette-results">
+      <div class="command-item" data-command="new-note"><span class="command-label">New Note</span><kbd>Cmd+N</kbd></div>
+      <div class="command-item" data-command="new-notebook"><span class="command-label">New Notebook</span></div>
+      <div class="command-item" data-command="toggle-sidebar"><span class="command-label">Toggle Sidebar</span><kbd>Cmd+\</kbd></div>
+      <div class="command-item" data-command="toggle-preview"><span class="command-label">Toggle Preview</span><kbd>Cmd+Shift+M</kbd></div>
+      <div class="command-item" data-command="find"><span class="command-label">Find in Note</span><kbd>Cmd+F</kbd></div>
+      <div class="command-item" data-command="export"><span class="command-label">Export Notes</span></div>
+      <div class="command-item" data-command="import"><span class="command-label">Import Notes</span></div>
+      <div class="command-item" data-command="preferences"><span class="command-label">Preferences</span><kbd>Cmd+,</kbd></div>
+      <div class="command-item" data-command="rebuild-fts"><span class="command-label">Rebuild Full-Text Search Index</span></div>
+      <div class="command-item" data-command="sync"><span class="command-label">Sync Database</span></div>
+      <div class="command-item" data-command="distraction-free"><span class="command-label">Toggle Distraction-Free Mode</span></div>
+      <div class="command-item" data-command="zoom-in"><span class="command-label">Zoom In</span><kbd>Cmd+=</kbd></div>
+      <div class="command-item" data-command="zoom-out"><span class="command-label">Zoom Out</span><kbd>Cmd+-</kbd></div>
+      <div class="command-item" data-command="zoom-reset"><span class="command-label">Reset Zoom</span><kbd>Cmd+0</kbd></div>
+      <div class="command-item" data-command="dev-tools"><span class="command-label">Toggle Developer Tools</span><kbd>Cmd+Alt+I</kbd></div>
+      <div class="command-item" data-command="about"><span class="command-label">About Inkdrop</span></div>
+      <div class="command-item" data-command="check-update"><span class="command-label">Check for Updates</span></div>
+      <div class="command-item" data-command="network-diagnosis"><span class="command-label">Run Network Diagnosis</span></div>
+    </div>
+  </div>
+
+  <!-- ── Find and Replace Bar ── -->
+  <div class="mde-search-bar hidden" id="search-replace-bar">
+    <div class="search-fields">
+      <div class="search-text-boxes">
+        <div class="search-row">
+          <svg class="search-input-icon" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          <input type="text" id="find-input" placeholder="Find..." autocomplete="off" spellcheck="false">
+          <span class="search-match-count" id="find-match-count"></span>
+        </div>
+        <div class="search-row">
+          <svg class="search-input-icon" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 4h8M3 7h5M3 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M10 7l2 3-2 3" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <input type="text" id="replace-input" placeholder="Replace..." autocomplete="off" spellcheck="false">
+        </div>
+      </div>
+      <div class="search-buttons">
+        <button class="search-btn" id="search-toggle-case" title="Match Case">Aa</button>
+        <button class="search-btn" id="search-toggle-regex" title="Use Regular Expression">.*</button>
+        <button class="search-btn" id="search-toggle-word" title="Match Whole Word">W</button>
+        <div class="search-btn-separator"></div>
+        <button class="search-btn" id="find-prev" title="Previous Match (Shift+Enter)">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9V3M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="search-btn" id="find-next" title="Next Match (Enter)">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 3v6M3 7l3 3 3-3" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="search-btn-separator"></div>
+        <button class="search-btn" id="replace-one" title="Replace">Replace</button>
+        <button class="search-btn" id="replace-all" title="Replace All">All</button>
+        <div class="search-btn-separator"></div>
+        <button class="search-btn search-close-btn" id="search-close" title="Close (Esc)">
+          <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Context Menu ── -->
+  <div class="context-menu hidden" id="context-menu">
+    <div class="context-menu-item" data-action="open">Open</div>
+    <div class="context-menu-item" data-action="open-new-window">Open in New Window</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" data-action="pin">Pin</div>
+    <div class="context-menu-item" data-action="favorite">Add to Favorites</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" data-action="move">Move to Notebook</div>
+    <div class="context-menu-item" data-action="duplicate">Duplicate</div>
+    <div class="context-menu-item" data-action="save-template">Save as Template</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" data-action="share">Share</div>
+    <div class="context-menu-item" data-action="export">Export</div>
+    <div class="context-menu-item" data-action="copy-link">Copy Note Link</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item context-menu-item-danger" data-action="trash">Move to Trash</div>
+  </div>
+
+  <!-- ── Notebook Context Menu ── -->
+  <div class="context-menu hidden" id="notebook-context-menu">
+    <div class="context-menu-item" data-action="new-note">New Note in Notebook</div>
+    <div class="context-menu-item" data-action="new-sub">New Sub-notebook</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" data-action="rename">Rename</div>
+    <div class="context-menu-item" data-action="change-icon">Change Icon</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item context-menu-item-danger" data-action="delete">Delete Notebook</div>
+  </div>
+
+  <!-- ── More Actions Menu (note editor) ── -->
+  <div class="context-menu hidden" id="note-more-menu">
+    <div class="context-menu-item" data-action="duplicate">Duplicate Note</div>
+    <div class="context-menu-item" data-action="copy-link">Copy Note Link</div>
+    <div class="context-menu-item" data-action="save-template">Save as Template</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" data-action="move">Move to Notebook</div>
+    <div class="context-menu-item" data-action="export-note">Export This Note</div>
+    <div class="context-menu-item" data-action="print">Print</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" data-action="note-info">Note Info</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item context-menu-item-danger" data-action="trash">Move to Trash</div>
+  </div>
+
+  <!-- ── App Menu Dropdown ── -->
+  <div class="context-menu app-menu hidden" id="app-menu">
+    <div class="context-menu-item" data-action="about">About Inkdrop</div>
+    <div class="context-menu-item" data-action="check-update">Check for Updates...</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" data-action="preferences">Preferences<kbd>Cmd+,</kbd></div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" data-action="new-note">New Note<kbd>Cmd+N</kbd></div>
+    <div class="context-menu-item" data-action="new-notebook">New Notebook</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" data-action="import">Import...</div>
+    <div class="context-menu-item" data-action="export">Export...</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" data-action="sync">Sync Database</div>
+    <div class="context-menu-item" data-action="rebuild-fts">Rebuild Search Index</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" data-action="toggle-sidebar">Toggle Sidebar<kbd>Cmd+\</kbd></div>
+    <div class="context-menu-item" data-action="distraction-free">Distraction-Free Mode</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" data-action="dev-tools">Developer Tools<kbd>Cmd+Alt+I</kbd></div>
+    <div class="context-menu-item" data-action="network-diagnosis">Network Diagnosis</div>
+    <div class="context-menu-separator"></div>
+    <div class="context-menu-item" data-action="logout">Log Out</div>
+    <div class="context-menu-item" data-action="quit">Quit Inkdrop<kbd>Cmd+Q</kbd></div>
+  </div>
+
+  <!-- ── About Modal ── -->
+  <div class="dialog-frame dialog-about hidden" id="about-modal" role="dialog">
+    <div class="dialog-body about-body">
+      <div class="about-logo">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <rect width="64" height="64" rx="16" fill="#4C6EF5"/>
+          <path d="M18 46V18h6v28h-6zm12-16h10a6 6 0 010 12H30V30zm0-12h8a6 6 0 010 12h-8V18z" fill="#fff"/>
+        </svg>
+      </div>
+      <h2>Inkdrop Clone</h2>
+      <p class="about-version">Version 1.0.0</p>
+      <p class="about-detail">Electron <span id="about-electron-ver"></span></p>
+      <p class="about-detail">Chrome <span id="about-chrome-ver"></span></p>
+      <p class="about-detail">Node <span id="about-node-ver"></span></p>
+      <p class="about-copyright">Reverse-engineered from Inkdrop v6.1.5 via REA</p>
+      <button class="dialog-btn dialog-btn-secondary" data-close="about-modal">Close</button>
+    </div>
+  </div>
+
+  <!-- ── Network Diagnosis Modal ── -->
+  <div class="dialog-frame hidden" id="network-diagnosis-modal" role="dialog" aria-labelledby="netdiag-title">
+    <div class="dialog-header">
+      <h3 id="netdiag-title">Network Diagnosis</h3>
+      <button class="dialog-close" data-close="network-diagnosis-modal">
+        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="dialog-body">
+      <div class="logs-container">
+        <div class="logs-header">
+          <span>Diagnosis Results</span>
+          <button class="dialog-btn dialog-btn-secondary" id="netdiag-run-btn">Run Again</button>
+        </div>
+        <div class="logs-view" id="netdiag-logs">
+          <p class="prefs-hint">Click "Run Again" to start network diagnosis</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Note Info Modal ── -->
+  <div class="dialog-frame hidden" id="note-info-modal" role="dialog" aria-labelledby="noteinfo-title">
+    <div class="dialog-header">
+      <h3 id="noteinfo-title">Note Info</h3>
+      <button class="dialog-close" data-close="note-info-modal">
+        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="dialog-body">
+      <div class="note-info-grid" id="note-info-grid">
+        <div class="info-row"><span class="info-label">ID</span><span class="info-value" id="info-note-id">-</span></div>
+        <div class="info-row"><span class="info-label">Created</span><span class="info-value" id="info-created">-</span></div>
+        <div class="info-row"><span class="info-label">Updated</span><span class="info-value" id="info-updated">-</span></div>
+        <div class="info-row"><span class="info-label">Notebook</span><span class="info-value" id="info-notebook">-</span></div>
+        <div class="info-row"><span class="info-label">Tags</span><span class="info-value" id="info-tags">-</span></div>
+        <div class="info-row"><span class="info-label">Status</span><span class="info-value" id="info-status">-</span></div>
+        <div class="info-row"><span class="info-label">Words</span><span class="info-value" id="info-words">-</span></div>
+        <div class="info-row"><span class="info-label">Characters</span><span class="info-value" id="info-chars">-</span></div>
+        <div class="info-row"><span class="info-label">Revisions</span><span class="info-value" id="info-revisions">-</span></div>
+        <div class="info-row"><span class="info-label">Pinned</span><span class="info-value" id="info-pinned">No</span></div>
+        <div class="info-row"><span class="info-label">Shared</span><span class="info-value" id="info-shared">No</span></div>
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <button class="dialog-btn dialog-btn-secondary" data-close="note-info-modal">Close</button>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!--              NOTIFICATION / TOAST                  -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="notification-bar" id="notification-bar">
+    <!-- Toast notifications injected here by app.js -->
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!--              PORTAL CONTAINER                      -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div id="portal-container"></div>
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!--              DROPDOWN SEARCH (global)              -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="dropdown-search hidden" id="global-search-dropdown">
+    <div class="dropdown-search-header">
+      <input type="text" id="global-search-input" placeholder="Search all notes..." autocomplete="off" spellcheck="false">
+    </div>
+    <div class="dropdown-search-results" id="global-search-results">
+      <!-- Search results populated by app.js -->
+    </div>
+    <div class="dropdown-search-footer">
+      <span>Type to search</span>
+      <kbd>Esc</kbd>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!--                  APP SCRIPT                        -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <script src="app.js" defer></script>
+
+</body>
+</html>
