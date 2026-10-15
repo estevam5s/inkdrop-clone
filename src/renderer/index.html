@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,7 @@
   <title>Inkdrop</title>
   <link rel="stylesheet" href="styles/main.css">
 </head>
-<body data-theme="dark">
+<body data-theme="light">
 
   <div id="app-container">
 
@@ -60,44 +60,37 @@
       <div class="header-bar" id="header-bar">
         <div class="header-bar-left">
           <div class="app-header-mac-inset"></div>
-          <button class="app-menu-button app-header-button" id="app-menu-btn" title="Menu">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect y="2" width="16" height="1.5" rx=".75"/><rect y="7.25" width="16" height="1.5" rx=".75"/><rect y="12.5" width="16" height="1.5" rx=".75"/></svg>
+          <button class="app-header-button" id="btn-new-note" title="New Note (Cmd+N)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2H4a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V6L9 2z"/><path d="M9 2v4h4"/><path d="M7 9h2"/></svg>
           </button>
-          <div class="app-header-separator"></div>
-          <div class="app-control-title" id="app-title">Inkdrop</div>
+          <button class="app-header-button" id="app-settings-btn" title="Settings">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="8" cy="8" r="2.5"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></svg>
+          </button>
         </div>
 
         <div class="header-bar-center">
-          <div class="header-bar-navigation">
-            <button class="app-header-button" id="nav-back" title="Back" disabled>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <button class="app-header-button" id="nav-forward" title="Forward" disabled>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-          </div>
+          <span class="header-bar-page-title" id="header-page-title">All Notes</span>
         </div>
 
         <div class="header-bar-right">
-          <button class="app-header-button" id="btn-new-note" title="New Note (Cmd+N)">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <button class="app-header-button" id="btn-expand-editor" title="Expand Editor">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M4 1h-3v3M10 1h3v3M4 13h-3v-3M10 13h3v-3"/></svg>
           </button>
-          <button class="app-header-button" id="btn-toggle-sidebar" title="Toggle Sidebar (Cmd+\\)">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.2" fill="none"/><line x1="5.5" y1="2" x2="5.5" y2="14" stroke="currentColor" stroke-width="1.2"/></svg>
+          <button class="app-header-button" id="nav-back" title="Back" disabled>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2L4 7l5 5"/></svg>
           </button>
-          <button class="app-header-button" id="btn-toggle-notelist" title="Toggle Note List">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.2" fill="none"/><line x1="7" y1="2" x2="7" y2="14" stroke="currentColor" stroke-width="1.2"/></svg>
+          <button class="app-header-button" id="nav-forward" title="Forward" disabled>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2l5 5-5 5"/></svg>
           </button>
-          <div class="app-header-separator"></div>
-          <div class="window-control-buttons" id="window-controls">
-            <button class="window-btn window-btn-minimize" id="btn-minimize" title="Minimize">
-              <svg width="10" height="10" viewBox="0 0 10 10"><line x1="1" y1="5" x2="9" y2="5" stroke="currentColor" stroke-width="1.2"/></svg>
+          <div class="header-view-mode-buttons" id="header-view-mode">
+            <button class="header-viewmode-btn active" data-mode="edit" title="Edit">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10l6-6 2 2-6 6H2v-2z"/><path d="M9 3l2-2 2 2-2 2z"/></svg>
             </button>
-            <button class="window-btn window-btn-maximize" id="btn-maximize" title="Maximize">
-              <svg width="10" height="10" viewBox="0 0 10 10"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+            <button class="header-viewmode-btn" data-mode="sideBySide" title="Side by Side">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1"><rect x="1" y="2" width="12" height="10" rx="1.5"/><line x1="7" y1="2" x2="7" y2="12"/></svg>
             </button>
-            <button class="window-btn window-btn-close" id="btn-close" title="Close">
-              <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            <button class="header-viewmode-btn" data-mode="preview" title="Preview">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1"><path d="M1 7s2.5-5 6-5 6 5 6 5-2.5 5-6 5-6-5-6-5z"/><circle cx="7" cy="7" r="2"/></svg>
             </button>
           </div>
         </div>
@@ -111,14 +104,6 @@
           <div class="sidebar-layout">
             <div class="sidebar-layout-content">
 
-              <!-- Workspace title -->
-              <div class="sidebar-workspace-menu" id="workspace-menu">
-                <div class="sidebar-workspace-title">
-                  <span class="sidebar-workspace-title-name" id="workspace-name">My Notes</span>
-                  <svg class="sidebar-workspace-chevron" width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M3 2l4 3-4 3" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </div>
-              </div>
-
               <!-- Sidebar navigation -->
               <div class="sidebar-navigation" id="sidebar-navigation">
                 <div class="sidebar-navigation-container">
@@ -127,35 +112,30 @@
                   <div class="sidebar-menu" id="sidebar-primary-menu">
                     <div class="sidebar-menu-item active" data-view="all-notes" tabindex="0">
                       <div class="sidebar-menu-item-content">
-                        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1zm1 3h8M4 8h8M4 11h5" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round"/></svg>
                         <span>All Notes</span>
                       </div>
                       <span class="sidebar-menu-item-count" id="all-notes-count">0</span>
                     </div>
 
-                    <div class="sidebar-menu-item" data-view="favorites" tabindex="0">
+                    <div class="sidebar-menu-item" data-view="templates" tabindex="0">
                       <div class="sidebar-menu-item-content">
-                        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2l1.8 3.6L14 6.2l-3 2.9.7 4.1L8 11.1l-3.7 2.1.7-4.1-3-2.9 4.2-.6z" stroke="currentColor" stroke-width="1" fill="none" stroke-linejoin="round"/></svg>
-                        <span>Favorites</span>
+                        <span>Note Templates</span>
                       </div>
-                      <span class="sidebar-menu-item-count" id="favorites-count"></span>
-                    </div>
-
-                    <div class="sidebar-menu-item" data-view="trash" tabindex="0">
-                      <div class="sidebar-menu-item-content">
-                        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1M3 4h10M4 4v9a1 1 0 001 1h6a1 1 0 001-1V4M7 7v4M9 7v4" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round"/></svg>
-                        <span>Trash</span>
-                      </div>
-                      <span class="sidebar-menu-item-count" id="trash-count"></span>
                     </div>
                   </div>
 
                   <!-- Notebooks section -->
                   <div class="sidebar-menu-section-header" id="notebooks-header">
                     <span>Notebooks</span>
-                    <button class="sidebar-section-action" id="create-notebook-btn" title="New Notebook">
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                    </button>
+                    <div class="sidebar-section-actions">
+                      <button class="sidebar-section-action" id="search-notebooks-btn" title="Search Notebooks">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="5" cy="5" r="3.5"/><path d="M8 8l2.5 2.5" stroke-linecap="round"/></svg>
+                      </button>
+                      <button class="sidebar-section-action" id="create-notebook-btn" title="New Notebook">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+                      </button>
+                      <button class="sidebar-section-action sidebar-detail-toggle" id="notebook-detail-toggle">Detail</button>
+                    </div>
                   </div>
                   <div class="sidebar-menu" id="notebook-list">
                     <!-- Dynamically populated -->
@@ -164,6 +144,14 @@
                   <!-- Tags section -->
                   <div class="sidebar-menu-section-header" id="tags-header">
                     <span>Tags</span>
+                    <div class="sidebar-section-actions">
+                      <button class="sidebar-section-action" id="search-tags-btn" title="Search Tags">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="5" cy="5" r="3.5"/><path d="M8 8l2.5 2.5" stroke-linecap="round"/></svg>
+                      </button>
+                      <button class="sidebar-section-action" id="sort-tags-btn" title="Sort Tags">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M3 2v8M1 8l2 2 2-2M9 10V2M7 4l2-2 2 2"/></svg>
+                      </button>
+                    </div>
                   </div>
                   <div class="sidebar-menu tag-list" id="tag-list">
                     <!-- Dynamically populated -->
@@ -172,31 +160,49 @@
                   <!-- Status section -->
                   <div class="sidebar-menu-section-header" id="status-header">
                     <span>Status</span>
+                    <button class="sidebar-section-action sidebar-collapse-toggle" id="status-collapse-toggle" title="Collapse">
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l3-4 3 4"/></svg>
+                    </button>
                   </div>
                   <div class="sidebar-menu note-statuses" id="status-nav">
                     <div class="sidebar-menu-item" data-status="active" tabindex="0">
                       <div class="sidebar-menu-item-content">
-                        <span class="note-status-label status-active"></span>
+                        <svg class="status-icon status-active" width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
                         <span>Active</span>
                       </div>
+                      <span class="sidebar-menu-item-count" data-status-count="active"></span>
                     </div>
                     <div class="sidebar-menu-item" data-status="onHold" tabindex="0">
                       <div class="sidebar-menu-item-content">
-                        <span class="note-status-label status-onhold"></span>
+                        <svg class="status-icon status-onhold" width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M5.5 5v4M8.5 5v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
                         <span>On Hold</span>
                       </div>
+                      <span class="sidebar-menu-item-count" data-status-count="onHold"></span>
                     </div>
                     <div class="sidebar-menu-item" data-status="completed" tabindex="0">
                       <div class="sidebar-menu-item-content">
-                        <span class="note-status-label status-completed"></span>
+                        <svg class="status-icon status-completed" width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" fill="currentColor" opacity="0.15"/><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M4.5 7l2 2 3-4" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         <span>Completed</span>
                       </div>
+                      <span class="sidebar-menu-item-count" data-status-count="completed"></span>
                     </div>
                     <div class="sidebar-menu-item" data-status="dropped" tabindex="0">
                       <div class="sidebar-menu-item-content">
-                        <span class="note-status-label status-dropped"></span>
+                        <svg class="status-icon status-dropped" width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M5 5l4 4M9 5l-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
                         <span>Dropped</span>
                       </div>
+                      <span class="sidebar-menu-item-count" data-status-count="dropped"></span>
+                    </div>
+                  </div>
+
+                  <!-- Trash -->
+                  <div class="sidebar-menu sidebar-menu-bottom" id="sidebar-bottom-menu">
+                    <div class="sidebar-menu-item" data-view="trash" tabindex="0">
+                      <div class="sidebar-menu-item-content">
+                        <svg class="sidebar-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"><path d="M4 4V3a1 1 0 011-1h4a1 1 0 011 1v1M2.5 4h9M3.5 4v8a1 1 0 001 1h5a1 1 0 001-1V4"/><path d="M6 6.5v3M8 6.5v3"/></svg>
+                        <span>Trash</span>
+                      </div>
+                      <span class="sidebar-menu-item-count" id="trash-count"></span>
                     </div>
                   </div>
 
@@ -257,11 +263,10 @@
 
                 <div class="note-list-header-separator"></div>
 
-                <!-- Search bar -->
+                <!-- Filter bar -->
                 <div class="note-list-search-bar" id="note-list-search-bar">
-                  <svg class="search-icon" width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-                  <input type="text" id="note-search" class="note-list-search-input" placeholder="Search..." autocomplete="off" spellcheck="false">
-                  <kbd class="search-shortcut" id="search-shortcut">&#8984;&#8679;F</kbd>
+                  <svg class="search-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 2h12L8.5 7.5V11L5.5 12.5V7.5L1 2z"/></svg>
+                  <input type="text" id="note-search" class="note-list-search-input" placeholder="Filter" autocomplete="off" spellcheck="false">
                 </div>
               </div>
 
@@ -384,48 +389,29 @@
               </div>
             </div>
 
-            <!-- Meta layout: notebook, tags, status -->
+            <!-- Meta layout: notebook, status, tags — inline like real Inkdrop -->
             <div class="editor-meta-layout" id="editor-meta">
               <div class="editor-meta-notebook">
-                <span class="field-label">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M2 1h8a1 1 0 011 1v8a1 1 0 01-1 1H2a1 1 0 01-1-1V2a1 1 0 011-1z" stroke="currentColor" stroke-width=".9" fill="none"/><path d="M4 1v10" stroke="currentColor" stroke-width=".9"/></svg>
-                  Notebook
-                </span>
-                <div class="notebook-picker" id="notebook-picker">
-                  <span class="notebook-icon" id="note-notebook-icon"></span>
-                  <select id="note-notebook" class="notebook-name"></select>
-                </div>
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 1.5h9a1 1 0 011 1v8a1 1 0 01-1 1H2a1 1 0 01-1-1v-8a1 1 0 011-1z"/><path d="M4 1.5v10"/></svg>
+                <select id="note-notebook" class="meta-select"></select>
               </div>
-
-              <div class="editor-meta-tags">
-                <span class="field-label">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M1 6.5V2a1 1 0 011-1h4.5L11 5.5 6.5 10 1 6.5z" stroke="currentColor" stroke-width=".9" fill="none" stroke-linejoin="round"/><circle cx="4" cy="4" r=".8"/></svg>
-                  Tags
-                </span>
-                <div class="note-tags-bar" id="note-tags-bar">
-                  <div class="note-tags-bar-item-list" id="note-tags-list">
-                    <!-- Tag pills inserted by app.js -->
-                  </div>
-                  <input type="text" class="note-tags-bar-input" id="note-tag-input" placeholder="Add tag..." autocomplete="off" spellcheck="false">
-                  <div class="note-tags-bar-dropdown-menu hidden" id="tag-suggestions">
-                    <!-- Autocomplete suggestions -->
-                  </div>
-                </div>
-              </div>
-
+              <div class="meta-separator">▸</div>
               <div class="editor-meta-status">
-                <span class="field-label">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width=".9" fill="none"/><circle cx="6" cy="6" r="2"/></svg>
-                  Status
-                </span>
-                <div class="note-status-picker" id="note-status-picker">
-                  <select id="note-status" class="note-status-select">
-                    <option value="none">None</option>
-                    <option value="active">Active</option>
-                    <option value="onHold">On Hold</option>
-                    <option value="completed">Completed</option>
-                    <option value="dropped">Dropped</option>
-                  </select>
+                <svg class="status-icon" width="13" height="13" viewBox="0 0 13 13"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1" fill="none"/></svg>
+                <select id="note-status" class="meta-select">
+                  <option value="none">None</option>
+                  <option value="active">Active</option>
+                  <option value="onHold">On Hold</option>
+                  <option value="completed">Completed</option>
+                  <option value="dropped">Dropped</option>
+                </select>
+              </div>
+              <div class="meta-separator">▸</div>
+              <div class="editor-meta-tags">
+                <div class="note-tags-bar" id="note-tags-bar">
+                  <div class="note-tags-bar-item-list" id="note-tags-list"></div>
+                  <input type="text" class="note-tags-bar-input" id="note-tag-input" placeholder="Add Tags" autocomplete="off" spellcheck="false">
+                  <div class="note-tags-bar-dropdown-menu hidden" id="tag-suggestions"></div>
                 </div>
               </div>
             </div>
@@ -938,11 +924,11 @@
           <div class="prefs-section">
             <h4>UI Themes</h4>
             <div class="theme-grid" id="ui-theme-grid">
-              <div class="theme-card active" data-theme-id="default-dark">
+              <div class="theme-card" data-theme-id="default-dark">
                 <div class="theme-preview theme-preview-dark"></div>
                 <span>Default Dark</span>
               </div>
-              <div class="theme-card" data-theme-id="default-light">
+              <div class="theme-card active" data-theme-id="default-light">
                 <div class="theme-preview theme-preview-light"></div>
                 <span>Default Light</span>
               </div>
@@ -951,11 +937,11 @@
           <div class="prefs-section">
             <h4>Syntax Themes</h4>
             <div class="theme-grid" id="syntax-theme-grid">
-              <div class="theme-card active" data-theme-id="default-dark">
+              <div class="theme-card" data-theme-id="default-dark">
                 <div class="theme-preview theme-preview-syntax-dark"></div>
                 <span>Default Dark</span>
               </div>
-              <div class="theme-card" data-theme-id="default-light">
+              <div class="theme-card active" data-theme-id="default-light">
                 <div class="theme-preview theme-preview-syntax-light"></div>
                 <span>Default Light</span>
               </div>

@@ -10,6 +10,9 @@ const Store = require('electron-store');
 const store = new Store({ name: 'inkdrop-clone-state' });
 const dataStore = new Store({ name: 'inkdrop-clone-data' });
 
+const savedTheme = dataStore.get('db.config.theme', 'light');
+nativeTheme.themeSource = savedTheme === 'dark' ? 'dark' : 'light';
+
 let mainWindow = null;
 let quickNoteWindow = null;
 const windowEventSubscribers = new Set();
@@ -116,7 +119,7 @@ function createMainWindow() {
     title: 'Inkdrop Clone',
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
     trafficLightPosition: { x: 12, y: 12 },
-    backgroundColor: nativeTheme.shouldUseDarkColors ? '#1a1a2e' : '#ffffff',
+    backgroundColor: savedTheme === 'dark' ? '#0a0a0a' : '#ffffff',
     webPreferences: {
       preload: path.join(__dirname, '..', 'preload', 'preload.js'),
       contextIsolation: true,
@@ -127,6 +130,11 @@ function createMainWindow() {
   });
 
   mainWindow.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'));
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.executeJavaScript(`document.body.classList.add('platform-${process.platform}')`);
+  });
+
 
   mainWindow.on('close', () => {
     const b = mainWindow.getBounds();
@@ -350,6 +358,23 @@ ipcMain.handle('clipboard:write-image', (_e, dataUrl) => {
 // ---------------------------------------------------------------------------
 // Data Store
 // ---------------------------------------------------------------------------
+ipcMain.handle('data-store:load', () => {
+  const db = getDB();
+  return {
+    notes: Object.values(db.notes || {}),
+    notebooks: Object.values(db.notebooks || {}),
+    tags: Object.values(db.tags || {}),
+    config: db.config || {}
+  };
+});
+
+ipcMain.handle('data-store:save', (_e, payload) => {
+  const db = getDB();
+  if (payload.config) db.config = payload.config;
+  saveDB(db);
+  return true;
+});
+
 ipcMain.handle('data-store:get-index-updating', () => false);
 ipcMain.handle('data-store:get-last-errors', () => []);
 ipcMain.handle('data-store:get-sync-info', () => syncState);

@@ -71,7 +71,7 @@ const STATUS_LABELS = { none:'None', active:'Active', onHold:'On Hold', complete
 // 4. DEFAULT DATA / TEMPLATES
 // ============================================================================
 const DEFAULT_CONFIG = {
-  theme: 'dark', editorFont: 'monospace', editorFontSize: 15, previewFont: 'sans-serif',
+  theme: 'light', editorFont: 'monospace', editorFontSize: 15, previewFont: 'sans-serif',
   sidebarWidth: 240, noteListWidth: 280, sortBy: 'updatedAt', sortDir: 'desc',
   viewMode: 'edit', lastOpenedNote: null, lastOpenedNotebook: null,
   tabSize: 2, lineWrapping: true, lineNumbers: false, spellCheck: false,
@@ -789,6 +789,14 @@ function renderEditor() {
   }
 
   if (statusSelect) statusSelect.value = note.status;
+
+  const breadcrumbName = document.getElementById('breadcrumb-notebook-name');
+  const breadcrumbIcon = document.getElementById('breadcrumb-notebook-icon');
+  const notebook = state.notebooks.find(b => b._id === note.bookId);
+  if (breadcrumbName && notebook) {
+    breadcrumbName.textContent = notebook.name;
+    if (breadcrumbIcon) breadcrumbIcon.textContent = notebook.icon || '';
+  }
 
   renderNoteTags();
   updateEditorStatus();
@@ -2192,25 +2200,30 @@ function setupSortControls() {
 // 38. SIDEBAR NAV EVENTS
 // ============================================================================
 function setupSidebarNav() {
+  function updatePageTitle(title) {
+    document.getElementById('note-list-title').textContent = title;
+    const headerTitle = document.getElementById('header-page-title');
+    if (headerTitle) headerTitle.textContent = title;
+  }
+
   document.querySelector('[data-view="all-notes"]')?.addEventListener('click', () => {
     setFilter({ type: 'all' });
-    document.getElementById('note-list-title').textContent = 'All Notes';
+    updatePageTitle('All Notes');
   });
 
-  document.querySelector('[data-view="favorites"]')?.addEventListener('click', () => {
-    setFilter({ type: 'favorites' });
-    document.getElementById('note-list-title').textContent = 'Favorites';
+  document.querySelector('[data-view="templates"]')?.addEventListener('click', () => {
+    showTemplatePickerModal();
   });
 
   document.querySelector('[data-view="trash"]')?.addEventListener('click', () => {
     setFilter({ type: 'trash' });
-    document.getElementById('note-list-title').textContent = 'Trash';
+    updatePageTitle('Trash');
   });
 
   document.querySelectorAll('[data-status]').forEach(el => {
     el.addEventListener('click', () => {
       setFilter({ type: 'status', status: el.dataset.status });
-      document.getElementById('note-list-title').textContent = STATUS_LABELS[el.dataset.status];
+      updatePageTitle(STATUS_LABELS[el.dataset.status]);
     });
   });
 
@@ -2228,23 +2241,22 @@ function setupSidebarNav() {
 // 39. HEADER BAR
 // ============================================================================
 function setupHeaderBar() {
-  document.getElementById('btn-minimize')?.addEventListener('click', () => ipcInvoke('window:minimize'));
-  document.getElementById('btn-maximize')?.addEventListener('click', () => ipcInvoke('window:maximize'));
-  document.getElementById('btn-close')?.addEventListener('click', () => ipcInvoke('window:close'));
-
-  document.getElementById('app-menu-btn')?.addEventListener('click', (e) => {
-    showContextMenu(e, [
-      { label: 'New Note', action: () => { const n = createNote(); selectNote(n._id); renderNoteList(); } },
-      { label: 'New Notebook', action: () => showCreateNotebookModal() },
-      { separator: true },
-      { label: 'Preferences', action: () => showPreferencesModal() },
-      { label: 'Import Notes', action: () => importBackup() },
-      { label: 'Export', action: () => showModal('export-modal') },
-      { separator: true },
-      { label: 'Toggle Theme', action: () => toggleTheme() },
-      { label: 'Command Palette', action: () => showCommandPalette() }
-    ]);
+  document.getElementById('btn-new-note')?.addEventListener('click', () => {
+    const n = createNote(); selectNote(n._id); renderNoteList();
   });
+
+  document.getElementById('app-settings-btn')?.addEventListener('click', () => showPreferencesModal());
+
+  document.querySelectorAll('.header-viewmode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      document.querySelectorAll('.header-viewmode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      setViewMode(mode);
+    });
+  });
+
+  document.getElementById('btn-expand-editor')?.addEventListener('click', () => toggleDistractionFree());
 }
 
 // ============================================================================
@@ -2387,6 +2399,11 @@ function setupGlobalHandlers() {
 // 46. INITIALIZATION
 // ============================================================================
 async function init() {
+  const platform = navigator.userAgentData?.platform || navigator.platform || '';
+  if (/mac/i.test(platform)) document.body.classList.add('platform-darwin');
+  else if (/win/i.test(platform)) document.body.classList.add('platform-win32');
+  else document.body.classList.add('platform-linux');
+
   initMarked();
   await loadState();
   applyTheme();
